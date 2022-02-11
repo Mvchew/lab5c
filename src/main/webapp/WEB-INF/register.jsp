@@ -20,5 +20,6 @@
             <button type="submit">Register Name</button>
             
         </form>
+        <p>${message}</p>
     </body>
 </html>
