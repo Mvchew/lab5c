@@ -2,10 +2,12 @@ package ca.sait.lab5b.servlets;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 /**
  *
@@ -25,10 +27,17 @@ public class ShoppingListServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         
+            HttpSession session = request.getSession();
 
+            String name = (String) session.getAttribute("name");
 
-        getServletContext().getRequestDispatcher("/WEB-INF/register.jsp").forward(request, response);
-        //getServletContext().getRequestDispatcher("/WEB-INF/shoppingList.jsp").forward(request, response);
+            if (name == null) {
+                getServletContext().getRequestDispatcher("/WEB-INF/register.jsp").forward(request, response);
+
+            } else {
+                getServletContext().getRequestDispatcher("/WEB-INF/shoppingList.jsp").forward(request, response);
+
+            }
     }
 
     /**
@@ -42,20 +51,44 @@ public class ShoppingListServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-         
+        
+        HttpSession session = request.getSession();
+        
+        
+
+        if (session.getAttribute("name") == null) {
+            getServletContext().getRequestDispatcher("/WEB-INF/register.jsp").forward(request, response);
+            return;
+        } 
 
 
-        getServletContext().getRequestDispatcher("/WEB-INF/register.jsp").forward(request, response);
+        String action = request.getParameter("action");
+ 
+        if(action != null && action.equals("add")) {
+
+            String item = request.getParameter("item");
+
+            ArrayList<String> items = (ArrayList<String>) (session.getAttribute("items"));
+
+            items.add(item);
+
+            session.setAttribute("items", items);
+
+
+        } else {
+            String name = request.getParameter("name");
+           
+
+            ArrayList<String> items = new ArrayList<>();
+
+            session.setAttribute("name", name);
+            session.setAttribute("items", items);
+
+            
+
+        }
+
+      getServletContext().getRequestDispatcher("/WEB-INF/shoppingList.jsp").forward(request, response);
     }
-
-    /**
-     * Returns a short description of the servlet.
-     *
-     * @return a String containing servlet description
-     */
-    @Override
-    public String getServletInfo() {
-        return "Short description";
-    }// </editor-fold>
 
 }
